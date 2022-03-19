@@ -193,9 +193,9 @@ def game(max_score, last_score):
                     key_right_pressed = True
             
             if event.type == pygame.KEYUP:
-                if event.key == pygame.K_a:
+                if event.key == pygame.K_a or event.key == pygame.K_LEFT:
                     key_left_pressed = False
-                if event.key == pygame.K_d:
+                if event.key == pygame.K_d or event.key == pygame.K_RIGHT:
                     key_right_pressed = False
         p.move(key_left_pressed, key_right_pressed, speed)
         p.draw()
