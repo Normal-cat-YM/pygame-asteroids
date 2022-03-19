@@ -12,7 +12,7 @@ class player:
 
 
     def move(self, key_left, key_right, speed = 0):
-        if speed == 0:
+        if not speed == 0:
             self.speed = speed
         if key_left:
             self.x -= self.speed
@@ -172,7 +172,7 @@ def game(max_score, last_score):
         pygame.time.delay(1000)
     key_right_pressed = False
     key_left_pressed = False
-    speed = 3
+    speed = 2
     p = player(300, 500, speed)
     asteroids = []
     asteroids.append(asteroid(speed*3, -200))
@@ -187,9 +187,9 @@ def game(max_score, last_score):
             if event.type == pygame.QUIT:  
                 done = True
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_a:
+                if event.key == pygame.K_a or event.key == pygame.K_LEFT:
                     key_left_pressed = True
-                if event.key == pygame.K_d:
+                if event.key == pygame.K_d or event.key == pygame.K_RIGHT:
                     key_right_pressed = True
             
             if event.type == pygame.KEYUP:
@@ -208,7 +208,7 @@ def game(max_score, last_score):
             max_score = score
         if next_score < score:
             next_score += 10
-            speed += 1
+            speed += 0.2
         last_score = score
         t = text("Score: " + str(score), 230, 10, (255, 0, 0), 50)
         t.draw()
