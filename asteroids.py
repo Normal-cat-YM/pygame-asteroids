@@ -23,8 +23,8 @@ class player:
         if key_right:
             self.x += self.speed
 
-            if self.x > SCREEN_WIDTH - 20:
-                self.x = SCREEN_WIDTH - 20
+            if self.x > SCREEN_WIDTH - 35:
+                self.x = SCREEN_WIDTH - 35
 
 
     def draw(self):
@@ -43,9 +43,9 @@ class asteroid:
         if not speed == 0:
             self.speed = speed
         self.y += self.speed
-        if self.y + 20 > self.height:
+        if self.y - 20 > self.height:
             self.y = 0
-            self.x = rand(0, SCREEN_WIDTH)
+            self.x = rand(0, SCREEN_WIDTH - 20)
             asteroid.score += 1
         return asteroid.score
 
@@ -106,7 +106,7 @@ FPS = 100
 #------------------------------------
 
 time_to_delay = int(1000/FPS)
-screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.RESIZABLE)
+screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 done = False
 mouse_clicked = False
 mouse_pos = (0, 0)
@@ -188,8 +188,10 @@ def game(max_score, last_score):
                 done = True
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_a or event.key == pygame.K_LEFT:
+                    key_right_pressed = False
                     key_left_pressed = True
                 if event.key == pygame.K_d or event.key == pygame.K_RIGHT:
+                    key_left_pressed = False
                     key_right_pressed = True
             
             if event.type == pygame.KEYUP:
