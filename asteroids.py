@@ -99,14 +99,14 @@ class text:
         screen.blit(self.text_obj, (self.x, self.y))
 
 
-#------------------------------------
+#====================
 SCREEN_WIDTH = 600
-SCREEN_HEIGHT = 600
+SCREEN_HEIGHT = 750
 FPS = 100
-#------------------------------------
+#====================
 
 time_to_delay = int(1000/FPS)
-screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.RESIZABLE | pygame.SCALED)
 done = False
 mouse_clicked = False
 mouse_pos = (0, 0)
@@ -119,6 +119,11 @@ def menu():
     global screen
     file = "score.txt"
     lines = []
+    if not os.path.exists(file):
+        open(file, "x")
+        f = open(file, "w")
+        f.write("0\n0")
+        f.close()
     f = open(file, "r+")
     data = f.read()
     lines = data.split('\n')
@@ -137,7 +142,7 @@ def menu():
     done = False
     while not done:
         pygame.time.delay(time_to_delay)
-        screen.fill((40,40,40))
+        screen.fill((50,50,50))
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -156,33 +161,42 @@ def menu():
         last_score_text = text("Last score: " + str(last_score), 190, 200)
         last_score_text.draw()
         if start_button.pressed(mouse_pos, mouse_clicked):
-            game(max_score, last_score)
+            game_for_one_person(max_score, last_score)
         pygame.display.flip()
     pygame.quit()
     exit()
 
-def game(max_score, last_score):
+def game_for_one_person(max_score, last_score):
     global screen, time_to_delay
+
+    #==========================
+    speed = 2
+    p = player(300, 700, speed)
+    next_score = 50
+    sec_before_start = 5
+    #==========================
+
     done = False
-    for sec_before_start in range(5, 0, -1):
-        screen.fill((40,40,40))
-        counting_text = text(str(sec_before_start), 250, 250, (0, 200, 0), 200)
-        counting_text.draw()
-        pygame.display.flip()
-        pygame.time.delay(1000)
     key_right_pressed = False
     key_left_pressed = False
-    speed = 2
-    p = player(300, 500, speed)
     asteroids = []
     asteroids.append(asteroid(speed*3, -200))
     asteroids.append(asteroid(speed*3, -400))
     asteroids.append(asteroid(speed*3, 0))
     asteroid.score = 0
-    next_score = 50
+    score = 0
+    last_score = 0
+    sec = 1001
+    sec_before_start += 1
+    counting_text = text(str(sec_before_start), 250, 250, (0, 200, 0), 200)
     while not done:
+        if sec > 1000 and sec_before_start != 0:
+            screen.fill((50,50,50))
+            sec_before_start -= 1
+            counting_text.draw(str(sec_before_start))
+            sec = 0
         pygame.time.delay(time_to_delay)
-        screen.fill((40,40,40))
+        sec += time_to_delay
         for event in pygame.event.get(): 
             if event.type == pygame.QUIT:  
                 done = True
@@ -199,21 +213,23 @@ def game(max_score, last_score):
                     key_left_pressed = False
                 if event.key == pygame.K_d or event.key == pygame.K_RIGHT:
                     key_right_pressed = False
-        p.move(key_left_pressed, key_right_pressed, speed)
-        p.draw()
+        if sec_before_start == 0:
+            screen.fill((50,50,50))
+            p.move(key_left_pressed, key_right_pressed, speed)
+            p.draw()
         
-        for object in asteroids[:]:
-            score = asteroid.move(object, speed*3)
-            if p.player_obj.colliderect(asteroid.draw(object)):
-                done = True
-        if max_score < score:
-            max_score = score
-        if next_score < score:
-            next_score += 10
-            speed += 0.2
-        last_score = score
-        t = text("Score: " + str(score), 230, 10, (255, 0, 0), 50)
-        t.draw()
+            for object in asteroids[:]:
+                score = asteroid.move(object, speed*3)
+                if p.player_obj.colliderect(asteroid.draw(object)):
+                   done = True
+            if max_score < score:
+                max_score = score
+            if next_score < score:
+                next_score += 10
+                speed += 0.2
+            last_score = score
+            t = text("Score: " + str(score), 230, 10, (255, 0, 0), 50)
+            t.draw()
         pygame.display.flip()
     file = "score.txt"
     f = open(file, "w")
